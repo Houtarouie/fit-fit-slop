@@ -80,6 +80,7 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
   // Refs for camera
   const videoRef = useRef(null);
   const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null); // Native mobile camera ref
   const streamRef = useRef(null);
 
   useEffect(() => {
@@ -513,10 +514,28 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
 
       {/* PHOTO TAB */}
       {activeTab === "photo" && !isLoading && !analysisResult && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          
+          {/* Description text area always visible at the top */}
           <div className="glass-card">
-            <h3 className="mb-2" style={{ fontSize: "1.1rem" }}>Upload or Capture Meal</h3>
+            <div className="form-group" style={{ marginBottom: "0.5rem" }}>
+              <label style={{ fontSize: "0.85rem", fontWeight: "700" }}>
+                What are you eating? (Include weights or quantities for accuracy)
+              </label>
+              <textarea
+                value={photoDescription}
+                onChange={(e) => setPhotoDescription(e.target.value)}
+                placeholder="Describe your meal or specify weights (e.g. 150g rice, 1 chicken breast, 1 cup salad) to help the AI Vision be more accurate..."
+                rows="3"
+                style={{ resize: "none", fontSize: "0.9rem" }}
+              />
+            </div>
+          </div>
+
+          <div className="glass-card">
+            <h3 className="mb-2" style={{ fontSize: "1.1rem" }}>Choose Meal Photo</h3>
             
+            {/* Hidden native uploads */}
             <input 
               type="file" 
               accept="image/*" 
@@ -524,23 +543,49 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
               ref={fileInputRef} 
               onChange={handleFileChange}
             />
+            <input 
+              type="file" 
+              accept="image/*" 
+              capture="environment" 
+              style={{ display: "none" }} 
+              ref={cameraInputRef} 
+              onChange={handleFileChange}
+            />
 
             {!cameraActive && !imagePreviewUrl && (
-              <div className="photo-uploader-box" onClick={triggerFileSelect}>
-                <div className="upload-icon">📷</div>
-                <div>
-                  <p style={{ fontWeight: "700" }}>Drag & Drop meal photo here</p>
-                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-                    or click to browse local files
-                  </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                {/* Drag and drop box / Gallery click area */}
+                <div 
+                  className="photo-uploader-box" 
+                  onClick={() => fileInputRef.current.click()}
+                  style={{ minHeight: "150px", padding: "1.5rem 1rem" }}
+                >
+                  <div className="upload-icon" style={{ fontSize: "2rem" }}>🖼️</div>
+                  <div>
+                    <p style={{ fontWeight: "700", fontSize: "0.95rem" }}>Upload from Gallery</p>
+                    <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.15rem" }}>
+                      Click to choose an image from your library
+                    </p>
+                  </div>
                 </div>
+
+                {/* Mobile Camera Option Button */}
                 <button 
                   type="button" 
-                  className="btn-secondary" 
-                  style={{ fontSize: "0.85rem", marginTop: "0.5rem" }}
-                  onClick={(e) => { e.stopPropagation(); startCamera(); }}
+                  className="btn-primary w-100"
+                  onClick={() => cameraInputRef.current.click()}
+                  style={{ background: "linear-gradient(135deg, var(--accent-protein-start), var(--accent-protein-end))", color: "#ffffff", boxShadow: "0 4px 15px rgba(244, 63, 94, 0.2)" }}
                 >
-                  Use Webcam
+                  📸 Take Photo with Camera
+                </button>
+
+                {/* Desktop Web camera Option Button */}
+                <button 
+                  type="button" 
+                  className="btn-secondary w-100"
+                  onClick={startCamera}
+                >
+                  💻 Use inline Web Camera
                 </button>
               </div>
             )}
@@ -562,16 +607,6 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
             {imagePreviewUrl && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.2rem" }}>
                 <img src={imagePreviewUrl} alt="Meal Preview" className="captured-preview" />
-                
-                <div className="form-group w-100">
-                  <label>Additional details (Optional context)</label>
-                  <input
-                    type="text"
-                    value={photoDescription}
-                    onChange={(e) => setPhotoDescription(e.target.value)}
-                    placeholder="e.g. 'Salmon cooked in olive oil, 150g white rice'"
-                  />
-                </div>
 
                 <div className="form-group w-100" style={{ flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
                   <input 
@@ -595,7 +630,7 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
                     className="btn-secondary" 
                     onClick={() => { setImagePreviewUrl(null); setCapturedImage(null); }}
                   >
-                    Remove
+                    Remove / Choose another
                   </button>
                 </div>
               </div>

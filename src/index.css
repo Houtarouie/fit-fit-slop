@@ -1260,6 +1260,35 @@ body {
     flex: 0 0 auto;
     font-size: 0.85rem;
   }
+
+  /* Compact Dashboard Rings for Mobile height saving */
+  .progress-ring-container {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 0.75rem;
+  }
+  .progress-ring-svg {
+    width: 120px;
+    height: 120px;
+  }
+  .ring-value {
+    font-size: 1.35rem;
+  }
+  .ring-label {
+    font-size: 0.95rem;
+  }
+  .ring-desc {
+    font-size: 0.75rem;
+  }
+  .progress-ring-card {
+    padding: 1.25rem 0.75rem;
+  }
+  .dashboard-grid {
+    gap: 1rem;
+  }
+  .rings-section {
+    gap: 1rem;
+  }
 }
 
 
