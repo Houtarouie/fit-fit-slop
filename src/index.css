@@ -1161,3 +1161,105 @@ body {
   50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
 }
 
+/* --- MOBILE RESPONSIVENESS IMPROVEMENTS --- */
+
+@media (max-width: 768px) {
+  .app-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: 
+      "brand date"
+      "nav nav";
+    gap: 1rem 0.5rem;
+    padding: 1rem;
+  }
+  .brand {
+    grid-area: brand;
+  }
+  .header-actions {
+    grid-area: date;
+  }
+  .nav-tabs {
+    grid-area: nav;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+    border-radius: 16px;
+    padding: 0.25rem;
+    background: var(--bg-secondary);
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-btn {
+    flex: 0 0 auto;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .glass-card {
+    padding: 1.25rem;
+    border-radius: 20px;
+  }
+  
+  .app-content {
+    padding: 1.25rem 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .meal-history-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .meal-history-right {
+    width: 100%;
+    justify-content: space-between;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.5rem;
+  }
+  .meal-history-info {
+    gap: 0.75rem;
+  }
+  .meal-details-text h4 {
+    font-size: 0.95rem;
+  }
+  .date-selector-pill {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  .brand h1 {
+    font-size: 1.3rem;
+  }
+  .brand-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 1.2rem;
+  }
+  
+  .log-tabs {
+    gap: 0.75rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .log-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .log-tab-btn {
+    flex: 0 0 auto;
+    font-size: 0.85rem;
+  }
+}
+
+

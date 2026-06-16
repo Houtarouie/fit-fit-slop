@@ -49,9 +49,10 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
   const [activeTab, setActiveTab] = useState("text"); // text, photo, manual
   
   // Settings unpack
-  const aiProvider = settings.aiProvider || "gemini";
+  const globalGroqApiKey = import.meta.env.VITE_GROQ_API_KEY || "";
+  const aiProvider = settings.aiProvider || (globalGroqApiKey ? "groq" : "gemini");
   const apiKey = settings.apiKey || "";
-  const groqApiKey = settings.groqApiKey || "";
+  const groqApiKey = settings.groqApiKey || globalGroqApiKey;
 
   // Text Tab State
   const [textDescription, setTextDescription] = useState("");

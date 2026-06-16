@@ -20,7 +20,7 @@ const getLocalDateString = (dateInput = new Date()) => {
 };
 
 const DEFAULT_SETTINGS = {
-  aiProvider: "gemini",
+  aiProvider: "groq",
   apiKey: "",
   groqApiKey: "",
   displayName: "Fitness Buddy",
@@ -100,7 +100,7 @@ export default function App() {
         const parsed = JSON.parse(storedSettings);
         setSettings(prev => ({
           ...prev,
-          aiProvider: parsed.aiProvider || "gemini",
+          aiProvider: parsed.aiProvider || "groq",
           apiKey: parsed.apiKey || "",
           groqApiKey: parsed.groqApiKey || ""
         }));

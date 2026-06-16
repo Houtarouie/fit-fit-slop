@@ -43,7 +43,18 @@ export default function Auth() {
       }
     } catch (err) {
       console.error(err);
-      setErrorMsg(err.message || "Authentication failed. Please verify your details.");
+      let msg = "Authentication failed. Please verify your details.";
+      if (err) {
+        if (typeof err === "object") {
+          msg = err.message || err.error_description || err.msg || JSON.stringify(err);
+          if (msg === "{}" || !msg) {
+            msg = err.toString() || "Unknown error";
+          }
+        } else {
+          msg = String(err);
+        }
+      }
+      setErrorMsg(msg);
     } finally {
       setLoading(false);
     }

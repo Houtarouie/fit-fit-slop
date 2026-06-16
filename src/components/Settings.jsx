@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabaseClient";
 
 export default function Settings({ settings, onSaveSettings, session }) {
-  const [aiProvider, setAiProvider] = useState(settings.aiProvider || "gemini");
+  const globalGroqApiKey = import.meta.env.VITE_GROQ_API_KEY || "";
+  const [aiProvider, setAiProvider] = useState(settings.aiProvider || (globalGroqApiKey ? "groq" : "gemini"));
   const [apiKey, setApiKey] = useState(settings.apiKey || "");
   const [groqApiKey, setGroqApiKey] = useState(settings.groqApiKey || "");
   const [showKey, setShowKey] = useState(false);
@@ -253,7 +254,7 @@ export default function Settings({ settings, onSaveSettings, session }) {
                     type={showGroqKey ? "text" : "password"}
                     value={groqApiKey}
                     onChange={(e) => setGroqApiKey(e.target.value)}
-                    placeholder="gsk_..."
+                    placeholder={globalGroqApiKey ? "Using global shared Groq key..." : "gsk_..."}
                     style={{ flex: 1 }}
                   />
                   <button
@@ -264,6 +265,11 @@ export default function Settings({ settings, onSaveSettings, session }) {
                     {showGroqKey ? "Hide" : "Show"}
                   </button>
                 </div>
+                {globalGroqApiKey && !groqApiKey && (
+                  <p style={{ fontSize: "0.75rem", color: "var(--success)", marginTop: "0.25rem" }}>
+                    ✓ Using shared global Groq key configured by administrator.
+                  </p>
+                )}
               </div>
             )}
           </div>
