@@ -23,7 +23,7 @@ export default function MealHistory({
 
   // Calculate totals
   const totalCals = filteredMeals.reduce((sum, m) => sum + m.calories, 0);
-  const totalProt = filteredMeals.reduce((sum, m) => sum + m.protein, 0);
+  const totalProt = filteredMeals.reduce((sum, m) => sum + Number(m.protein || 0), 0);
 
   const calPercent = Math.min(100, Math.round((totalCals / calorieTarget) * 100)) || 0;
   const protPercent = Math.min(100, Math.round((totalProt / proteinTarget) * 100)) || 0;
@@ -180,7 +180,7 @@ export default function MealHistory({
                     <div className="meal-history-right" onClick={(e) => e.stopPropagation()}>
                       <div className="meal-history-macros">
                         <div className="meal-history-cal">{meal.calories} kcal</div>
-                        <div className="meal-history-prot">{meal.protein.toFixed(1)}g protein</div>
+                        <div className="meal-history-prot">{Number(meal.protein || 0).toFixed(1)}g protein</div>
                       </div>
                       <button 
                         className="delete-meal-btn" 

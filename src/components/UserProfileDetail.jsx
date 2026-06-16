@@ -21,7 +21,7 @@ export default function UserProfileDetail({
   if (!user) return null;
 
   const totalCalsToday = user.mealsToday ? user.mealsToday.reduce((sum, m) => sum + m.calories, 0) : 0;
-  const totalProtToday = user.mealsToday ? user.mealsToday.reduce((sum, m) => sum + m.protein, 0) : 0;
+  const totalProtToday = user.mealsToday ? user.mealsToday.reduce((sum, m) => sum + Number(m.protein || 0), 0) : 0;
 
   const calPercent = Math.min(100, Math.round((totalCalsToday / user.calorieTarget) * 100)) || 0;
   const protPercent = Math.min(100, Math.round((totalProtToday / user.proteinTarget) * 100)) || 0;

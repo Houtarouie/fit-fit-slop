@@ -16,7 +16,7 @@ export default function Dashboard({
 }) {
   // Calculations
   const totalCalories = todayMeals.reduce((acc, meal) => acc + meal.calories, 0);
-  const totalProtein = todayMeals.reduce((acc, meal) => acc + meal.protein, 0);
+  const totalProtein = todayMeals.reduce((acc, meal) => acc + Number(meal.protein || 0), 0);
 
   const calRemaining = calorieTarget - totalCalories;
   const calPercent = Math.min(100, Math.round((totalCalories / calorieTarget) * 100)) || 0;
