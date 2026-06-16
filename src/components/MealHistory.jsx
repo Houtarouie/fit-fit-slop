@@ -17,7 +17,10 @@ export default function MealHistory({
 
   // Filter meals for the selected date
   const filteredMeals = meals.filter(meal => {
-    const mealDate = new Date(meal.timestamp).toISOString().split("T")[0];
+    if (!meal || !meal.timestamp) return false;
+    const dateObj = new Date(meal.timestamp);
+    if (isNaN(dateObj.getTime())) return false;
+    const mealDate = dateObj.toISOString().split("T")[0];
     return mealDate === selectedDate;
   });
 
@@ -126,7 +129,10 @@ export default function MealHistory({
             {filteredMeals.map((meal) => {
               const isExpanded = expandedMealId === meal.id;
               const hasItems = meal.items && meal.items.length > 0;
-              const mealTime = new Date(meal.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              const dateObj = new Date(meal.timestamp);
+              const mealTime = isNaN(dateObj.getTime())
+                ? "00:00"
+                : dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
               return (
                 <div 
@@ -143,35 +149,35 @@ export default function MealHistory({
                   <div className="d-flex justify-between align-center" style={{ flexWrap: "wrap", gap: "0.5rem" }}>
                     <div className="meal-history-info">
                       {/* Image Thumbnail or Default Icon */}
-                      {meal.image ? (
+                      {meal.image_url ? (
                         <img 
-                          src={meal.image} 
-                          alt={meal.mealName} 
+                          src={meal.image_url} 
+                          alt={meal.meal_name} 
                           className="meal-photo-thumb"
                         />
                       ) : (
                         <div className="meal-photo-thumb">
-                          {meal.mealName.toLowerCase().includes("egg") ? "🍳" : 
-                           meal.mealName.toLowerCase().includes("chicken") ? "🍗" :
-                           meal.mealName.toLowerCase().includes("salad") ? "🥗" : 
-                           meal.mealName.toLowerCase().includes("rice") ? "🍚" : "🍽️"}
+                          {(meal.meal_name || "").toLowerCase().includes("egg") ? "🍳" : 
+                           (meal.meal_name || "").toLowerCase().includes("chicken") ? "🍗" :
+                           (meal.meal_name || "").toLowerCase().includes("salad") ? "🥗" : 
+                           (meal.meal_name || "").toLowerCase().includes("rice") ? "🍚" : "🍽️"}
                         </div>
                       )}
 
                       <div className="meal-details-text">
-                        <h4 style={{ color: "var(--text-primary)" }}>{meal.mealName}</h4>
+                        <h4 style={{ color: "var(--text-primary)" }}>{meal.meal_name}</h4>
                         <p style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                           <span>⏱️ {mealTime}</span>
                           <span>•</span>
                           <span style={{ 
-                            background: meal.image ? "rgba(56, 189, 248, 0.1)" : "rgba(148, 163, 184, 0.1)",
-                            color: meal.image ? "var(--calories-solid)" : "var(--text-secondary)",
+                            background: meal.image_url ? "rgba(56, 189, 248, 0.1)" : "rgba(148, 163, 184, 0.1)",
+                            color: meal.image_url ? "var(--calories-solid)" : "var(--text-secondary)",
                             padding: "0.1rem 0.4rem",
                             borderRadius: "4px",
                             fontSize: "0.7rem",
                             fontWeight: "600"
                           }}>
-                            {meal.image ? "AI Photo Analysis" : meal.isManual ? "Manual Entry" : "Text Analysis"}
+                            {meal.image_url ? "AI Photo Analysis" : meal.isManual ? "Manual Entry" : "Text Analysis"}
                           </span>
                         </p>
                       </div>
