@@ -1027,3 +1027,137 @@ body {
 .justify-between { justify-content: space-between; }
 .gap-1 { gap: 1rem; }
 .w-100 { width: 100%; }
+
+/* --- ROYAL ADMIN EFFECTS --- */
+.admin-glow {
+  background: linear-gradient(135deg, #ffe066 0%, #f59e0b 50%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800 !important;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+  animation: goldShimmer 3s infinite linear;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.crown-badge {
+  display: inline-block;
+  font-size: 1.1rem;
+  animation: crownBounce 2s infinite ease-in-out;
+  filter: drop-shadow(0 2px 5px rgba(245, 158, 11, 0.5));
+}
+
+/* King Intro Overlay */
+.king-intro-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(5, 8, 19, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: fadeOutIntro 0.5s ease-in 2.5s forwards;
+  pointer-events: none;
+}
+
+.king-intro-crown {
+  font-size: 6rem;
+  animation: scaleCrown 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  filter: drop-shadow(0 0 25px rgba(245, 158, 11, 0.8));
+  margin-bottom: 2rem;
+}
+
+.king-intro-text {
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: linear-gradient(to right, #fff, #ffd700, #ff8c00, #fff);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShine 3s infinite linear, slideUpIntro 1s ease-out forwards;
+  opacity: 0;
+}
+
+.king-intro-sub {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin-top: 0.5rem;
+  animation: fadeInSub 1s ease-out 0.8s forwards;
+  opacity: 0;
+}
+
+.sparkles-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sparkle-star {
+  position: absolute;
+  color: #ffd700;
+  font-size: 1.5rem;
+  animation: sparkleStarAnim 2s infinite ease-in-out;
+}
+
+/* Admin Profile Card Glow */
+.admin-profile-card {
+  border: 2px solid rgba(245, 158, 11, 0.3) !important;
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.15) !important;
+  background: linear-gradient(135deg, rgba(12, 17, 34, 0.7) 0%, rgba(245, 158, 11, 0.03) 100%) !important;
+}
+
+/* Keyframes */
+@keyframes goldShimmer {
+  0% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(15deg) brightness(1.2); }
+  100% { filter: hue-rotate(0deg); }
+}
+
+@keyframes crownBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(8deg); }
+}
+
+@keyframes scaleCrown {
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+@keyframes slideUpIntro {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeInSub {
+  to { opacity: 1; }
+}
+
+@keyframes fadeOutIntro {
+  to { opacity: 0; visibility: hidden; }
+}
+
+@keyframes textShine {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes sparkleStarAnim {
+  0%, 100% { transform: scale(0.3) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
+}
+

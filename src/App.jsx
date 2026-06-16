@@ -143,7 +143,8 @@ export default function App() {
           activityLevel: data.activity_level,
           goal: data.goal,
           calorieTarget: Number(data.calorie_target),
-          proteinTarget: Number(data.protein_target)
+          proteinTarget: Number(data.protein_target),
+          isAdmin: data.is_admin || false
         }));
       }
     } catch (err) {
@@ -216,7 +217,7 @@ export default function App() {
       // 3. Fetch meals shared to feed
       const { data: mealsData, error: mealsError } = await supabase
         .from("meals")
-        .select("*, profiles(username, display_name, avatar)")
+        .select("*, profiles(username, display_name, avatar, is_admin)")
         .eq("shared_to_feed", true)
         .order("timestamp", { ascending: false });
       
@@ -226,7 +227,7 @@ export default function App() {
       const { data: likesData } = await supabase.from("likes").select("*");
       const { data: commentsData } = await supabase
         .from("comments")
-        .select("*, profiles(username)");
+        .select("*, profiles(username, is_admin)");
 
       const compiledFeed = (mealsData || []).map(meal => {
         const mealLikes = likesData 
@@ -239,7 +240,8 @@ export default function App() {
         const mealComments = commentsData
           ? commentsData.filter(c => c.meal_id === meal.id).map(c => ({
               username: c.profiles?.username || "deleted_user",
-              text: c.text
+              text: c.text,
+              isAdmin: c.profiles?.is_admin || false
             }))
           : [];
 
@@ -254,7 +256,8 @@ export default function App() {
           image: meal.image_url,
           timestamp: meal.timestamp,
           likes: mealLikes,
-          comments: mealComments
+          comments: mealComments,
+          isAdmin: meal.profiles?.is_admin || false
         };
       });
 

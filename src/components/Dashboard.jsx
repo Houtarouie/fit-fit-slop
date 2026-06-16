@@ -34,7 +34,8 @@ export default function Dashboard({
     displayName: currentUser.displayName || "You",
     avatar: currentUser.avatar || "⚡",
     streak: streakCount,
-    isMe: true
+    isMe: true,
+    isAdmin: currentUser.isAdmin
   };
 
   const followedBuddiesEntries = buddiesList.map(buddy => ({
@@ -42,7 +43,8 @@ export default function Dashboard({
     displayName: buddy.display_name || buddy.displayName || buddy.username,
     avatar: buddy.avatar || "⚡",
     streak: buddy.streak || 0,
-    isMe: false
+    isMe: false,
+    isAdmin: buddy.is_admin || false
   }));
 
   const leaderboard = [activeUserEntry, ...followedBuddiesEntries].sort((a, b) => b.streak - a.streak);
@@ -191,7 +193,7 @@ export default function Dashboard({
         
         {/* Fit-Buddies Streak Leaderboard */}
         <div className="glass-card" style={{ padding: "1.5rem" }}>
-          <h3 className="mb-2" style={{ fontSize: "1.05rem", fontWeight: "700", display: "flex", alignCenter: "center", gap: "0.4rem" }}>
+          <h3 className="mb-2" style={{ fontSize: "1.05rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.4rem" }}>
             <span>🏆</span> Fit-Buddies Leaderboard
           </h3>
           
@@ -216,8 +218,12 @@ export default function Dashboard({
                   <div className="meal-photo-thumb" style={{ width: "30px", height: "30px", fontSize: "0.95rem", borderRadius: "50%", margin: 0 }}>
                     {player.avatar}
                   </div>
-                  <span style={{ fontSize: "0.9rem", fontWeight: player.isMe ? "700" : "600" }}>
+                  <span 
+                    style={{ fontSize: "0.9rem", fontWeight: player.isMe ? "700" : "600", display: "flex", alignItems: "center", gap: "0.25rem" }}
+                    className={player.isAdmin ? "admin-glow" : ""}
+                  >
                     {player.displayName} {player.isMe ? "(You)" : ""}
+                    {player.isAdmin && <span className="crown-badge" style={{ fontSize: "0.85rem" }}>👑</span>}
                   </span>
                 </div>
                 

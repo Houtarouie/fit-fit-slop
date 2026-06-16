@@ -89,14 +89,19 @@ export default function SocialFeed({
                     onClick={() => onSelectUser(post.username)}
                   >
                     <div className="meal-photo-thumb" style={{ width: "36px", height: "36px", fontSize: "1.1rem", borderRadius: "50%", margin: 0 }}>
-                      {post.avatar || (post.username === "me" || post.username === currentUser.username ? "⚡" : "👤")}
+                      {post.isAdmin ? "👑" : (post.avatar || "👤")}
                     </div>
                     <div>
-                      <span style={{ fontWeight: "700", display: "block", fontSize: "0.95rem" }}>
+                      <span 
+                        style={{ fontWeight: "700", display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.95rem" }} 
+                        className={post.isAdmin ? "admin-glow" : ""}
+                      >
                         {post.displayName || (post.username === "me" || post.username === currentUser.username ? currentUser.displayName || "You" : post.username)}
+                        {post.isAdmin && <span className="crown-badge" style={{ fontSize: "0.9rem" }}>👑</span>}
                       </span>
                       <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", display: "block", marginTop: "-2px" }}>
                         @{post.username} • {formatAgo(post.timestamp)}
+                        {post.isAdmin && <strong style={{ color: "#ffd700", fontSize: "0.7rem", marginLeft: "0.4rem" }}>[ADMIN]</strong>}
                       </span>
                     </div>
                   </div>
@@ -148,16 +153,25 @@ export default function SocialFeed({
                 {/* Comments List */}
                 {post.comments.length > 0 && (
                   <div style={{ background: "rgba(255, 255, 255, 0.01)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "0.75rem", display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1rem" }}>
-                    {post.comments.map((comment, idx) => (
-                      <div key={idx} style={{ fontSize: "0.85rem", lineHeight: "1.4" }}>
-                        <strong style={{ color: "var(--text-primary)", cursor: "pointer" }} onClick={() => onSelectUser(comment.username)}>
-                          @{comment.username}
-                        </strong>
-                        <span style={{ color: "var(--text-secondary)", marginLeft: "0.4rem" }}>
-                          {comment.text}
-                        </span>
-                      </div>
-                    ))}
+                    {post.comments.map((comment, idx) => {
+                      const isCommentAdmin = comment.isAdmin === true;
+                      
+                      return (
+                        <div key={idx} style={{ fontSize: "0.85rem", lineHeight: "1.4" }}>
+                          <strong 
+                            style={{ color: "var(--text-primary)", cursor: "pointer" }} 
+                            onClick={() => onSelectUser(comment.username)}
+                            className={isCommentAdmin ? "admin-glow" : ""}
+                          >
+                            @{comment.username}
+                            {isCommentAdmin && <span className="crown-badge" style={{ fontSize: "0.75rem", marginLeft: "0.15rem" }}>👑</span>}
+                          </strong>
+                          <span style={{ color: "var(--text-secondary)", marginLeft: "0.4rem" }}>
+                            {comment.text}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 
