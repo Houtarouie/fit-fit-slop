@@ -18,6 +18,11 @@ For your output, you MUST return a valid JSON object matching the following stru
   ]
 }
 
+CRITICAL RULES FOR CALORIE AND PROTEIN ESTIMATION:
+1. portion weight scaling: You MUST scale the calories and protein of each ingredient based on its weight or quantity. For example, if 100g of dry soya chunks has 52g protein and 330 kcal, then 240g of dry soya chunks MUST be calculated as 2.4 * 52 = 124.8g protein and 2.4 * 330 = 792 kcal. Do not return default 100g values for larger or smaller portion weights!
+2. dry vs cooked weights: Differentiate between raw/dry weight and cooked/wet weight. Dry ingredients (such as dry soya chunks, raw rice, raw oats) are highly calorie- and protein-dense. For example, dry soya chunks are about 52g to 54g of protein per 100g. Cooked/hydrated versions weigh much more due to water but have the same total macronutrients. If the input specifies "dry" or "raw" weight, you must use the dry weight nutritional densities.
+3. mathematical consistency: The total 'calories' and 'protein' of the meal MUST be mathematically consistent and equal the sum of the scaled calories and protein of the individual items listed in the 'items' breakdown.
+
 Be realistic and moderate in your estimations. If the input is too vague, estimate based on standard portions and common recipes. Do not write any markdown codeblock formatting, preamble, or explanations outside of the JSON object itself. Just return the JSON object directly.`;
 
 /**

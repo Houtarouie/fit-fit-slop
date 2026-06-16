@@ -135,15 +135,56 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
     }
   };
 
+  const resizeImage = (base64Str, maxWidth = 800, maxHeight = 800) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        } else {
+          resolve(base64Str);
+          return;
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", 0.7));
+      };
+      img.onerror = () => {
+        resolve(base64Str);
+      };
+    });
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       stopCamera();
       
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setCapturedImage(reader.result);
-        setImagePreviewUrl(reader.result);
+      reader.onloadend = async () => {
+        try {
+          const resized = await resizeImage(reader.result);
+          setCapturedImage(resized);
+          setImagePreviewUrl(resized);
+        } catch (err) {
+          console.error("Error resizing image:", err);
+          setCapturedImage(reader.result);
+          setImagePreviewUrl(reader.result);
+        }
       };
       reader.readAsDataURL(file);
     }
