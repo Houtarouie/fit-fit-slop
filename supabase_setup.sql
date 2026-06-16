@@ -167,3 +167,35 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- 8. Storage Setup for 'meal-photos' bucket and RLS policies
+-- Create the 'meal-photos' bucket if it doesn't exist
+insert into storage.buckets (id, name, public)
+values ('meal-photos', 'meal-photos', true)
+on conflict (id) do nothing;
+
+-- Enable Row Level Security (RLS) on storage objects
+alter table storage.objects enable row level security;
+
+-- Drop existing policies if they exist to avoid duplicate errors
+drop policy if exists "Allow public read access to meal-photos" on storage.objects;
+drop policy if exists "Allow authenticated users to upload meal-photos" on storage.objects;
+drop policy if exists "Allow users to modify their own meal-photos" on storage.objects;
+
+-- Allow public read access to the 'meal-photos' bucket
+create policy "Allow public read access to meal-photos"
+on storage.objects for select
+using (bucket_id = 'meal-photos');
+
+-- Allow authenticated users to upload/insert files
+create policy "Allow authenticated users to upload meal-photos"
+on storage.objects for insert
+to authenticated
+with check (bucket_id = 'meal-photos');
+
+-- Allow authenticated users to update/delete their own files
+create policy "Allow users to modify their own meal-photos"
+on storage.objects for all
+to authenticated
+using (bucket_id = 'meal-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+
