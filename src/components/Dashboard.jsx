@@ -230,6 +230,12 @@ export default function Dashboard({
           <div className="progress-ring-card">
             <div className="progress-ring-container">
               <svg className="progress-ring-svg" width="160" height="160">
+                <defs>
+                  <linearGradient id="calories-grad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="var(--accent-calories-start)" />
+                    <stop offset="100%" stopColor="var(--accent-calories-end)" />
+                  </linearGradient>
+                </defs>
                 <circle
                   className="progress-ring-bg"
                   cx="80"
@@ -265,6 +271,12 @@ export default function Dashboard({
           <div className="progress-ring-card">
             <div className="progress-ring-container">
               <svg className="progress-ring-svg" width="160" height="160">
+                <defs>
+                  <linearGradient id="protein-grad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="var(--accent-protein-start)" />
+                    <stop offset="100%" stopColor="var(--accent-protein-end)" />
+                  </linearGradient>
+                </defs>
                 <circle
                   className="progress-ring-bg"
                   cx="80"
