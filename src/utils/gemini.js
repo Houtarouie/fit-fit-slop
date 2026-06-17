@@ -102,3 +102,39 @@ export async function analyzeMealImage(apiKey, base64Data, mimeType, additionalT
     throw new Error(error.message || "Failed to analyze meal image using Gemini API.");
   }
 }
+
+/**
+ * Generates personalized fitness and diet coach insights based on biometrics and today's intake
+ */
+export async function getCoachAdviceGemini(apiKey, profile, todayIntake) {
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const systemInstruction = `You are Coach Marcus, a highly encouraging, elite fitness trainer and nutritional expert. Your tone is motivating, professional, concise, and athletic. You analyze the user's current day intake and biometrics, and provide a single brief paragraph (max 3 sentences) of highly actionable, encouraging coaching feedback. Never output markdown code block, JSON, or greeting preamble. Just output the coach advice text directly. Keep it short and impactful.`;
+
+    const prompt = `User Biometrics:
+- Weight: ${profile.weight} kg
+- Height: ${profile.height} cm
+- Age: ${profile.age} years old
+- Gender: ${profile.gender}
+- Goal: ${profile.goal}
+- Activity Level: ${profile.activityLevel}
+
+Today's Intake so far:
+- Total Calories consumed: ${todayIntake.calories} kcal (Target: ${profile.calorieTarget} kcal)
+- Total Protein consumed: ${todayIntake.protein} g (Target: ${profile.proteinTarget} g)
+
+Give a short coaching tip for the rest of the day.`;
+
+    const result = await model.generateContent([
+      { text: systemInstruction },
+      { text: prompt }
+    ]);
+
+    return result.response.text().trim();
+  } catch (error) {
+    console.error("Gemini Coach Error:", error);
+    throw new Error(error.message || "Failed to generate coaching insights.");
+  }
+}

@@ -116,3 +116,54 @@ export async function analyzeMealImageGroq(apiKey, base64Data, mimeType, additio
     throw new Error(error.message || "Failed to analyze meal image using Groq API.");
   }
 }
+
+/**
+ * Generates personalized fitness and diet coach insights based on biometrics and today's intake
+ */
+export async function getCoachAdviceGroq(apiKey, profile, todayIntake) {
+  try {
+    const systemInstruction = `You are Coach Marcus, a highly encouraging, elite fitness trainer and nutritional expert. Your tone is motivating, professional, concise, and athletic. You analyze the user's current day intake and biometrics, and provide a single brief paragraph (max 3 sentences) of highly actionable, encouraging coaching feedback. Never output markdown code block, JSON, or greeting preamble. Just output the coach advice text directly. Keep it short and impactful.`;
+    
+    const prompt = `User Biometrics:
+- Weight: ${profile.weight} kg
+- Height: ${profile.height} cm
+- Age: ${profile.age} years old
+- Gender: ${profile.gender}
+- Goal: ${profile.goal}
+- Activity Level: ${profile.activityLevel}
+
+Today's Intake so far:
+- Total Calories consumed: ${todayIntake.calories} kcal (Target: ${profile.calorieTarget} kcal)
+- Total Protein consumed: ${todayIntake.protein} g (Target: ${profile.proteinTarget} g)
+
+Give a short coaching tip for the rest of the day.`;
+
+    const response = await fetch(GROQ_COMPLETIONS_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: systemInstruction },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 150
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error?.message || `Groq API responded with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content.trim();
+  } catch (error) {
+    console.error("Groq Coach Error:", error);
+    throw new Error(error.message || "Failed to generate coaching insights.");
+  }
+}

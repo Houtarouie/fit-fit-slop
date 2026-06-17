@@ -604,6 +604,7 @@ export default function App() {
         {activeTab === "dashboard" && (
           <Dashboard 
             todayMeals={filteredMealsForSelectedDate}
+            allMeals={meals}
             calorieTarget={settings.calorieTarget}
             proteinTarget={settings.proteinTarget}
             waterGlassCount={currentWaterCount}
@@ -615,6 +616,7 @@ export default function App() {
             currentUser={settings}
             buddiesList={followedBuddies}
             onSelectUser={handleSelectUser}
+            onProfileUpdate={fetchUserProfile}
           />
         )}
 
