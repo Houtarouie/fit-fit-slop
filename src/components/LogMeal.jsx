@@ -76,6 +76,30 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
   const [analysisResult, setAnalysisResult] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoggedSuccessfully, setIsLoggedSuccessfully] = useState(false);
+  
+  // Background upload and loading text rotation states
+  const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [loadingText, setLoadingText] = useState("Analyzing Nutrition...");
+
+  useEffect(() => {
+    if (!isLoading) return;
+    const steps = [
+      "Initializing AI Vision Scanner... 🔍",
+      "Optimizing food image matrix... 📉",
+      "Identifying ingredients & food density... 🥦",
+      "Querying global nutrition database... 📊",
+      "Calculating portion scaling & macros... ⚖️",
+      "Assembling daily intake report... 📝"
+    ];
+    let index = 0;
+    setLoadingText(steps[0]);
+    const interval = setInterval(() => {
+      index = (index + 1) % steps.length;
+      setLoadingText(steps[index]);
+    }, 1200);
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   // Refs for camera
   const videoRef = useRef(null);
@@ -117,6 +141,19 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
     }
   };
 
+  const startBackgroundUpload = async (imgBase64) => {
+    if (!imgBase64 || imgBase64.startsWith("http") || !session) return;
+    try {
+      setIsUploadingImage(true);
+      const url = await uploadImageToSupabase(imgBase64);
+      setUploadedImageUrl(url);
+    } catch (err) {
+      console.error("Background upload failed:", err);
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const capturePhoto = () => {
     if (videoRef.current) {
       const canvas = document.createElement("canvas");
@@ -132,10 +169,11 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
       setCapturedImage(base64Img);
       setImagePreviewUrl(base64Img);
       stopCamera();
+      startBackgroundUpload(base64Img);
     }
   };
 
-  const resizeImage = (base64Str, maxWidth = 800, maxHeight = 800) => {
+  const resizeImage = (base64Str, maxWidth = 600, maxHeight = 600) => {
     return new Promise((resolve) => {
       const img = new Image();
       img.src = base64Str;
@@ -161,7 +199,7 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
         canvas.height = height;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", 0.7));
+        resolve(canvas.toDataURL("image/jpeg", 0.6));
       };
       img.onerror = () => {
         resolve(base64Str);
@@ -180,10 +218,12 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
           const resized = await resizeImage(reader.result);
           setCapturedImage(resized);
           setImagePreviewUrl(resized);
+          startBackgroundUpload(resized);
         } catch (err) {
           console.error("Error resizing image:", err);
           setCapturedImage(reader.result);
           setImagePreviewUrl(reader.result);
+          startBackgroundUpload(reader.result);
         }
       };
       reader.readAsDataURL(file);
@@ -247,6 +287,7 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
     setErrorMsg("");
     setCapturedImage(preset.mockImage);
     setImagePreviewUrl(preset.mockImage);
+    setUploadedImageUrl(preset.mockImage);
     
     setTimeout(() => {
       setAnalysisResult({
@@ -353,9 +394,9 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
     setErrorMsg("");
 
     try {
-      let onlineImageUrl = null;
-      if (capturedImage) {
-        // Upload photo to Supabase storage bucket
+      let onlineImageUrl = uploadedImageUrl;
+      if (!onlineImageUrl && capturedImage && !capturedImage.startsWith("http")) {
+        // Upload photo to Supabase storage bucket (fallback if background upload didn't finish)
         onlineImageUrl = await uploadImageToSupabase(capturedImage);
       }
 
@@ -375,6 +416,7 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
       setPhotoDescription("");
       setCapturedImage(null);
       setImagePreviewUrl(null);
+      setUploadedImageUrl(null);
       
       setTimeout(() => {
         setIsLoggedSuccessfully(false);
@@ -669,7 +711,11 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
                   <button 
                     type="button" 
                     className="btn-secondary" 
-                    onClick={() => { setImagePreviewUrl(null); setCapturedImage(null); }}
+                    onClick={() => { 
+                      setImagePreviewUrl(null); 
+                      setCapturedImage(null); 
+                      setUploadedImageUrl(null); 
+                    }}
                   >
                     Remove / Choose another
                   </button>
@@ -771,9 +817,9 @@ export default function LogMeal({ settings, onLogMeal, onNavigateToTab, session 
         <div className="glass-card loading-overlay">
           <div className="spinner" />
           <div style={{ textAlign: "center" }}>
-            <h4 style={{ fontWeight: "700", animation: "pulse 1s infinite" }}>Analyzing Nutrition...</h4>
+            <h4 style={{ fontWeight: "700", animation: "pulse 1.5s infinite", minHeight: "1.5rem" }}>{loadingText}</h4>
             <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-              Scanning food density parameters...
+              {isUploadingImage ? "Uploading image to secure storage..." : "Please wait, scanning macros dynamically..."}
             </p>
           </div>
         </div>
